@@ -51,8 +51,8 @@ extractGames_Row <- function(row){
     html_nodes(xpath = "./td") %>% 
     html_text() 
   return(
-    tibble(date = date, visitor_team = rowVec[2], visitor_score = rowVec[3], home_team = rowVec[4], 
-           home_score = rowVec[5]) 
+    tibble(date = date, visitor_team = rowVec[2], visitor_score = as.numeric(rowVec[3]), home_team = rowVec[4], 
+           home_score = as.numeric(rowVec[5]))
   )
 }
   
