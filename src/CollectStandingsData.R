@@ -4,22 +4,22 @@ library(purrr)
 library(stringr)
 
 #Author: Matthew Tribby
-#Date: 5/11/18
+#Date Created: 5/11/18
 
-# The goal of this script is to gather the data for this project
+# The goal of this script is to gather the standings data for this project
 # This data is all non-derived stats but just basic NBA standings data
 # Organization:
-  # 1. extractData: main function which is the only function needed to get the data
-  # 2. extractYearData: extracts one year's worth of data
-  # 3. extractTeamData: extracts one team's data in one year (this function depends on getting the correct html)
+  # 1. extractStandings_Range: main function which is the only function needed to get the standings data
+  # 2. extractStandings_Year: extracts one year's worth of standings data
+  # 3. extractStandings_Row: extracts one team's standings data for one year (this function depends on getting the correct html)
 
 # This is the main function for scraping the data
 #Input: the range of years to scrape from (i.e '1990:2018')
 #Output: Data frame with standings for all NBA teams for all years
-extractData <- function(range){
+extractStandings_Range <- function(range){
   return(
     range %>%
-      map(extractYearData) %>%
+      map(extractStandings_Year) %>%
       bind_rows()
   )
 }
@@ -32,13 +32,13 @@ urlStandings <- function(year){return(
 
 #This function scrapes data for one year from one page
 #Output: All NBA teams and their standings data along with the year for easy id later
-extractYearData <- function(year){
+extractStandings_Year <- function(year){
   return(
     read_html(urlStandings(year)) %>%
       html_nodes(".suppress_all.sortable.stats_table") %>%
       .[1:2] %>% 
       html_nodes(".full_table") %>% 
-      map(extractTeamData) %>%
+      map(extractStandings_Row) %>%
       bind_rows() %>%
       mutate(year = year)
   )
@@ -46,7 +46,7 @@ extractYearData <- function(year){
 
 #This function extracts one row (one's team data) from the table and assembles
 #the row into a tibble which is one row of that year's data
-extractTeamData <- function(html){
+extractStandings_Row <- function(html){
   teamName <- html %>%
     html_nodes(xpath = "./th/a") %>%
     html_text()
